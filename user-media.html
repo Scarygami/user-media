@@ -46,7 +46,6 @@ request and display a user's media stream as video.
          */
         flip: {
           type: Boolean,
-          value: true,
           reflectToAttribute: true
         },
 
@@ -93,9 +92,20 @@ request and display a user's media stream as video.
         }
       },
 
+      /**
+       * Fired when initializarion fails
+       * @event user-media-error
+       */
+
+      /**
+       * Fired when the video starts streaming
+       * @event streaming
+       */
+
       ready: function () {
         this.addEventListener('canplay', function () {
           this.streaming = true;
+          this.fire('streaming');
         }.bind(this), false);
 
         navigator.getUserMedia(
@@ -112,11 +122,15 @@ request and display a user's media stream as video.
             this.play();
           }.bind(this),
           function(err) {
-            console.log(err);
-            this.innerHTML = err.message || err.name;
+            this.fire('user-media-error', err);
           }.bind(this)
         );
       },
+
+      /**
+       * Fired when capturing a photo isn't possible
+       * @event capture-error
+       */
 
       /**
        * Capture a photo from the current user media stream
@@ -126,11 +140,11 @@ request and display a user's media stream as video.
        */
       capture: function () {
         if (!this.captureMode) {
-          console.log('Capture mode disabled');
+          this.fire('capture-error', 'Capture mode disabled');
           return;
         }
         if (!this.streaming) {
-          console.log('No stream available');
+          this.fire('capture-error', 'No stream available');
           return;
         }
 

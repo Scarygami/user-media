@@ -11,7 +11,14 @@
   </head>
   <body>
     <template is="dom-bind" id="app">
-      <video id="video" is="user-media" streaming="{{streaming}}" capture-mode flip></video>
+      <div>[[message]]</div>
+      <video id="video"
+             is="user-media"
+             streaming="{{streaming}}"
+             capture-mode
+             flip
+             on-user-media-error="error"
+             on-capture-error="captureError"></video>
       <button hidden$="[[!streaming]]" on-click="capture">Take photo</button>
       <img id="result">
     </template>
@@ -28,6 +35,14 @@
           if (data) {
             img.src = data;
           }
+        };
+
+        app.error = function (e) {
+          app.message = e.detail.message || e.detail.name;
+        };
+
+        app.captureError = function (e) {
+          app.message = e.detail;
         };
       }(this));
     </script>
